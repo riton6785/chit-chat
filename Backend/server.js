@@ -30,4 +30,4 @@ app.get("/api/chats", (req, res)=>{
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(process.env.port, console.log(`server is running on port ${process.env.port}`))
+app.listen(process.env.PORT, console.log(`server is running on port ${process.env.PORT }`))
