@@ -8,13 +8,30 @@ import UpdateGroupChatModal from './Miscellanious/UpdateGroupChatModal'
 import axios from 'axios'
 import "./User/styles.css"
 import ScrollableChat from './Miscellanious/ScrollableChat'
+import io from "socket.io-client"
+import Lottie from "react-lottie"
+import animationData from "../Animations/typing.json"
+
+const ENDPOINT = "http://localhost:5000";
+var socket, selectedChatCompare;
 const SingleChat = ({fetchAgain, setFetchAgain}) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
-  const {user, selectedChat, setSelectedChat} = ChatState()
+  const {user, selectedChat, setSelectedChat} = ChatState();
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [ typing, setTyping ] = useState(false);
+  const [ isTyping, setIsTyping ] = useState(false);
   const toast = useToast();
 
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidMid slice"
+    }
+  }
   const fetchMessages = async () => {
     if( !selectedChat ) return;
     try {
@@ -28,6 +45,7 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
       setMessages(data)
       console.log(data)
       setLoading(false);
+      socket.emit("join-room", selectedChat._id)
     } catch (error) {
       toast({
         title: "Error occured",
@@ -40,11 +58,32 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
     }
   }
   useEffect(()=> {
+    socket = io(ENDPOINT);
+    socket.emit("setup", user);
+    socket.on("connected", ()=> setSocketConnected(true))
+    socket.on("typing", ()=> setIsTyping(true));
+    socket.on("stop typing", ()=> setIsTyping(false));
+  },[])
+
+  useEffect(()=> {
     fetchMessages();
+    selectedChatCompare = selectedChat
   }, [selectedChat])
+
+  useEffect(()=> {
+    socket.on("message-recieved", (newMessageRecieved) => {
+      if( !selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id){
+        // notification part
+      } else {
+        setMessages([...messages, newMessageRecieved])
+      }
+    })
+  })
+
 
   const sendMessage = async(event) => {
     if (event.key === "Enter" && newMessage ) {
+      socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
           headers: {
@@ -57,6 +96,7 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
           content: newMessage,
           chatId: selectedChat._id,
         }, config)
+        socket.emit("new-message", data)
         setMessages([...messages, data]);
         
       } catch (error) {
@@ -74,7 +114,23 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
 
   const typingHandler = (e) => {
     setNewMessage(e.target.value)
+    if(!typing) {
+      setTyping(true);
+      socket.emit("typing", selectedChat._id);
+    }
+    // Logic to stop typing whenever time stops more than 4 second
 
+    var lastTypingTime = new Date().getTime();
+    var timerLength = 3000;
+    setTimeout(()=> {
+      console.log("4 second logic")
+      var timeNow = new Date().getTime();
+      var timeDiff = timeNow - lastTypingTime;
+      if(timeDiff > timerLength && typing) {
+        socket.emit("stop typing", selectedChat._id);
+        setTyping(false);
+      }
+    }, timerLength)
   }
   return (
     <>
@@ -109,6 +165,9 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
                 )
               }
               <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+              {isTyping ? <div>
+                          <Lottie options={defaultOptions} width={70} style={{marginBottom: 15, marginLeft: 0}}/>
+              </div>: (<></>)}
                 <Input variant="filled" bg="#E0E0E0" placeholder='Enter a message' onChange={typingHandler} value={newMessage}/>
               </FormControl>
             </Box>
