@@ -11,8 +11,9 @@ import ScrollableChat from './Miscellanious/ScrollableChat'
 import io from "socket.io-client"
 import Lottie from "react-lottie"
 import animationData from "../Animations/typing.json"
+const BACKEND_URI = import.meta.env.VITE_REACT_API_BACKEND_URI
 
-const ENDPOINT = "http://localhost:5000";
+const ENDPOINT = BACKEND_URI;
 var socket, selectedChatCompare;
 const SingleChat = ({fetchAgain, setFetchAgain}) => {
   const [messages, setMessages] = useState([]);
@@ -41,7 +42,7 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
         },
       }
       setLoading(true);
-      const { data } = await axios.get(`http://localhost:5000/api/message/${selectedChat._id}`, config)
+      const { data } = await axios.get(`${BACKEND_URI}/api/message/${selectedChat._id}`, config)
       setMessages(data)
       console.log(data)
       setLoading(false);
@@ -96,7 +97,7 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
           },
         }
         setNewMessage("");
-        const { data } = await axios.post("http://localhost:5000/api/message", {
+        const { data } = await axios.post(`${BACKEND_URI}/api/message`, {
           content: newMessage,
           chatId: selectedChat._id,
         }, config)

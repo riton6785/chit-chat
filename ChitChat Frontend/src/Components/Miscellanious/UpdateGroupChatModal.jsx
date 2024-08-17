@@ -5,6 +5,8 @@ import { ChatState } from '../Authentication/Context/ChatProvider';
 import UserBadgeItem from '../User/UserBadgeItem';
 import axios from 'axios';
 import UserListItem from '../User/UserListItem';
+const BACKEND_URI = import.meta.env.VITE_REACT_API_BACKEND_URI
+
 
 const UpdateGroupChatModal = ({fetchAgain, setFetchAgain, fetchMessages}) => {
     const {isOpen, onOpen, onClose} = useDisclosure();
@@ -37,7 +39,7 @@ const UpdateGroupChatModal = ({fetchAgain, setFetchAgain, fetchMessages}) => {
                     Authorization: `Bearer ${user.token}`,
                 },
             }
-            const { data } = await axios.put("http://localhost:5000/api/chat/groupremove",{
+            const { data } = await axios.put(`${BACKEND_URI}/api/chat/groupremove`,{
                 chatId: selectedChat._id,
                 userId: usertoRemove._id,
             },config);
@@ -86,7 +88,7 @@ const UpdateGroupChatModal = ({fetchAgain, setFetchAgain, fetchMessages}) => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const {data} = await axios.put("http://localhost:5000/api/chat/groupadd", {
+            const {data} = await axios.put(`${BACKEND_URI}/api/chat/groupadd`, {
                 chatId: selectedChat._id,
                 userId: usertoAdd,
             }, config)
@@ -116,7 +118,7 @@ const UpdateGroupChatModal = ({fetchAgain, setFetchAgain, fetchMessages}) => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const {data} = await axios.put("http://localhost:5000/api/chat/rename", {
+            const {data} = await axios.put(`${BACKEND_URI}/api/chat/rename`, {
                 chatId: selectedChat._id,
                 chatName: groupChatName,
             }, config)
@@ -148,7 +150,7 @@ const UpdateGroupChatModal = ({fetchAgain, setFetchAgain, fetchMessages}) => {
                   Authorization: `Bearer ${user.token}`,
                 }
               }
-              const { data } = await axios.get(`http://localhost:5000/api/user?search=${search}`, config)
+              const { data } = await axios.get(`${BACKEND_URI}/api/user?search=${search}`, config)
               setLoading(false);
               setSearchResult(data);
               console.log(data);

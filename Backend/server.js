@@ -35,7 +35,10 @@ const server = app.listen(process.env.PORT, console.log(`server is running on po
 const io = require('socket.io')(server, {
     pingTimeout: 60000,
     cors: {
-        origin: "http://localhost:5173"
+        origin: [
+            "http://localhost:5173",
+            "https://chit-chat-frontend-4hd7.onrender.com",
+        ]
     },
 })
 

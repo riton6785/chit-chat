@@ -10,6 +10,8 @@ import UserListItem from '../User/UserListItem';
 import { getSender } from '../../config/ChatLogic';
 import NotificationBadge from 'react-notification-badge'
 import {Effect} from "react-notification-badge"
+const BACKEND_URI = import.meta.env.VITE_REACT_API_BACKEND_URI
+
 
 const SideDrawer = () => {
   const {user, selectedChat, setSelectedChat, chats, setChats, notification, setNotification} = ChatState();
@@ -42,7 +44,7 @@ const SideDrawer = () => {
           Authorization: `Bearer ${user.token}`,
         }
       }
-      const { data } = await axios.get(`http://localhost:5000/api/user?search=${search}`, config)
+      const { data } = await axios.get(`${BACKEND_URI}/api/user?search=${search}`, config)
       setLoading(false)
       setSearchResult(data)
     } catch (error) {
@@ -66,7 +68,7 @@ const SideDrawer = () => {
           Authorization: `Bearer ${user.token}`,
         }
       }
-      const { data } = await axios.post(`http://localhost:5000/api/chat`, {userId}, config)
+      const { data } = await axios.post(`${BACKEND_URI}/api/chat`, {userId}, config)
       if (!chats.find((c)=> c.id === data.id)) setChats([data, ...chats])
       setSelectedChat(data);
       setLoadingChat(false);

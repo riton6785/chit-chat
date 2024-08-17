@@ -2,6 +2,7 @@ import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, V
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+const BACKEND_URI = import.meta.env.VITE_REACT_API_BACKEND_URI
 
 const Signup = () => {
     const [show, setShow] = useState(false)
@@ -93,7 +94,7 @@ const Signup = () => {
           },
         };
         const { data } = await axios.post(
-          "http://localhost:5000/api/user",
+          `${BACKEND_URI}/api/user`,
           {name, email, password, pic},
           config
           )

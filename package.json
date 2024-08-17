@@ -1,0 +1,16 @@
+{
+    "name": "todo-mern",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+      "install-server": "cd Backend && npm install",
+      "start-server": "cd Backend && node server.js",
+      "install-client": "cd 'ChitChat Frontend' && npm install --force",
+      "build-client": "cd 'ChitChat Frontend' && npm run build",
+      "start-client": "cd 'ChitChat Frontend' && npm run start"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+  }

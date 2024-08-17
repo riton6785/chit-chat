@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Toast, VStack, useToast } from '@chakra-ui/react'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import axios from 'axios';
+const BACKEND_URI = import.meta.env.VITE_REACT_API_BACKEND_URI
 
 const Login = () => {
     const [show, setShow] = useState(false)
@@ -33,7 +34,7 @@ const Login = () => {
           },
         };
         const { data } = await axios.post(
-          "http://localhost:5000/api/user/login",
+          `${BACKEND_URI}/api/user/login`,
           {email, password},
           config
           )

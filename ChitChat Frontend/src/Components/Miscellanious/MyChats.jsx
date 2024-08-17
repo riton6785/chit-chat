@@ -5,6 +5,8 @@ import axios from 'axios';
 import { AddIcon } from '@chakra-ui/icons';
 import { getSender } from '../../config/ChatLogic';
 import GroupChatModal from './GroupChatModal';
+const BACKEND_URI = import.meta.env.VITE_REACT_API_BACKEND_URI
+
 
 const MyChats = ({fetchAgain}) => {
   const [loggedUser, setLoggedUser] = useState();
@@ -18,7 +20,7 @@ const MyChats = ({fetchAgain}) => {
           Authorization: `Bearer ${user.token}`
         }
       }
-      const {data} = await axios.get("http://localhost:5000/api/chat", config)
+      const {data} = await axios.get(`${BACKEND_URI}/api/chat`, config)
       setChats(data);
     } catch (error) {
       toast({
