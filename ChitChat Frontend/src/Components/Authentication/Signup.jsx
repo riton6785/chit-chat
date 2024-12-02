@@ -42,10 +42,8 @@ const Signup = () => {
           .then((data)=> {
             setPic(data.url.toString())
             setLoading(false);
-            console.log(pic)
           })
           .catch((error)=> {
-            console.log(error)
             setLoading(false)
           })
          

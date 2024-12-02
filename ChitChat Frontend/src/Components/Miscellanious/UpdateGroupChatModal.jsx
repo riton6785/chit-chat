@@ -151,7 +151,6 @@ const UpdateGroupChatModal = ({fetchAgain, setFetchAgain, fetchMessages}) => {
               const { data } = await axios.get(`http://localhost:5000/api/user?search=${search}`, config)
               setLoading(false);
               setSearchResult(data);
-              console.log(data);
         } catch (error) {
             toast({
                 title: "Error Occured",

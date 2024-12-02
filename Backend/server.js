@@ -24,7 +24,6 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes)
 
 app.get("/api/chats", (req, res)=>{
-    console.log("Hitted___________________")
     res.send(chats);
 })
 app.use(notFound);
@@ -39,17 +38,26 @@ const io = require('socket.io')(server, {
     },
 })
 
+onlineUsers = []
 io.on("connection", (socket)=>{
-    console.log("connected to socket .io", socket.id)
     socket.on("setup", (userData)=> {
         socket.join(userData._id)
-        console.log(userData);
         socket.emit("connected");
+        userExists = onlineUsers.find((u)=> u.userId === userData._id);
+        if(userExists){
+            userExists.socketId = socket.id;
+        } else {
+            onlineUsers.push({
+                userId : userData._id,
+                name : userData.name,
+                socketId : socket.id,
+            })
+        }
+        io.emit("get-online-users", onlineUsers)
     })
 
     socket.on("join-room", (room)=> {
         socket.join(room);
-        console.log("user jooined room", room);
     })
 
     socket.on("typing", (room)=> socket.in(room).emit("typing"));
@@ -66,7 +74,11 @@ io.on("connection", (socket)=>{
     })
 
     socket.off("setup", ()=> {
-        console.log("user Diconnedcted");
         socket.leave(userData._id);
+    })
+
+    socket.on("disconnect", ()=> {
+        onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+        io.emit("get-online-users", onlineUsers)
     })
 })

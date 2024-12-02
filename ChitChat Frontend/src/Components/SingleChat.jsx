@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ChatState } from './Authentication/Context/ChatProvider'
 import { Box, FormControl, IconButton, Input, Spinner, Text, useStatStyles, useToast } from '@chakra-ui/react'
 import { ArrowBackIcon } from "@chakra-ui/icons"
-import { getSenderFull, getSender } from '../config/ChatLogic'
+import { getSenderFull, getSender, socketconnector } from '../config/ChatLogic'
 import  ProfileModal  from "./Miscellanious/ProfileModal"
 import UpdateGroupChatModal from './Miscellanious/UpdateGroupChatModal'
 import axios from 'axios'
@@ -14,7 +14,7 @@ import animationData from "../Animations/typing.json"
 
 const ENDPOINT = "http://localhost:5000";
 var socket, selectedChatCompare;
-const SingleChat = ({fetchAgain, setFetchAgain}) => {
+const SingleChat = ({fetchAgain, setFetchAgain, socketInitializer}) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
@@ -43,7 +43,6 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
       setLoading(true);
       const { data } = await axios.get(`http://localhost:5000/api/message/${selectedChat._id}`, config)
       setMessages(data)
-      console.log(data)
       setLoading(false);
       socket.emit("join-room", selectedChat._id)
     } catch (error) {
@@ -58,7 +57,8 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
     }
   }
   useEffect(()=> {
-    socket = io(ENDPOINT);
+    // socket = io(ENDPOINT);
+    socket = socketInitializer;
     socket.emit("setup", user);
     socket.on("connected", ()=> setSocketConnected(true))
     socket.on("typing", ()=> setIsTyping(true));
@@ -70,7 +70,6 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
     selectedChatCompare = selectedChat
   }, [selectedChat])
 
-  console.log(notification, "___________________________________")
   useEffect(()=> {
     socket.on("message-recieved", (newMessageRecieved) => {
       if( !selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id){
@@ -127,7 +126,6 @@ const SingleChat = ({fetchAgain, setFetchAgain}) => {
     var lastTypingTime = new Date().getTime();
     var timerLength = 3000;
     setTimeout(()=> {
-      console.log("4 second logic")
       var timeNow = new Date().getTime();
       var timeDiff = timeNow - lastTypingTime;
       if(timeDiff > timerLength && typing) {

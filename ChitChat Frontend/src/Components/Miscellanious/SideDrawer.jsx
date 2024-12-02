@@ -11,7 +11,7 @@ import { getSender } from '../../config/ChatLogic';
 import NotificationBadge from 'react-notification-badge'
 import {Effect} from "react-notification-badge"
 
-const SideDrawer = () => {
+const SideDrawer = ({socketInitializer}) => {
   const {user, selectedChat, setSelectedChat, chats, setChats, notification, setNotification} = ChatState();
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -23,6 +23,7 @@ const SideDrawer = () => {
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
+    socketInitializer.disconnect();
     history.push("/")
   }
   const handleClick = async ()=> {

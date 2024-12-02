@@ -1,5 +1,20 @@
+import io from "socket.io-client"
+
+const ENDPOINT = "http://localhost:5000";
+
+export const socketconnector = () => {
+  return io(ENDPOINT);
+}
+
+export const getUserState = (loggedUser, users, onlineUsers) => {
+  const userId = users[0]._id === loggedUser._id ? users[1]._id: users[0]._id;
+  if(onlineUsers.some((user) => user.userId === userId)){
+    return "Online";
+  } else {
+    return "offline";
+  }
+}
 export const getSender = (loggedUser, users) => {
-    debugger
     return users[0]._id === loggedUser._id ? users[1].name: users[0].name;
 }
 

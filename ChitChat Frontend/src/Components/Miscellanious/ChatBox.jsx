@@ -3,7 +3,7 @@ import React from 'react'
 import { ChatState } from '../Authentication/Context/ChatProvider'
 import SingleChat from '../SingleChat'
 
-const ChatBox = ({fetchAgain, setFetchAgain}) => {
+const ChatBox = ({fetchAgain, setFetchAgain, socketInitializer}) => {
   const {selectedChat} = ChatState()
   return (
     <Box
@@ -16,7 +16,7 @@ const ChatBox = ({fetchAgain, setFetchAgain}) => {
       borderRadius="lg"
       borderWidth="1px"
     >
-      <SingleChat fetchAgain={fetchAgain} setFetchAgain={setFetchAgain}/>
+      <SingleChat fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} socketInitializer={socketInitializer}/>
     </Box>
   )
 }

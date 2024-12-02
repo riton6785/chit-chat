@@ -3,12 +3,14 @@ import { ChatState } from '../Authentication/Context/ChatProvider'
 import { Box, Button, Stack, useToast, Text } from '@chakra-ui/react';
 import axios from 'axios';
 import { AddIcon } from '@chakra-ui/icons';
-import { getSender } from '../../config/ChatLogic';
+import { getSender, getUserState } from '../../config/ChatLogic';
 import GroupChatModal from './GroupChatModal';
 
-const MyChats = ({fetchAgain}) => {
+var socket;
+const MyChats = ({fetchAgain, socketInitializer}) => {
   const [loggedUser, setLoggedUser] = useState();
   const { user, selectedChat, setSelectedChat, chats, setChats } = ChatState()
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const toast = useToast();
 
   const fetchChats = async() => {
@@ -35,7 +37,12 @@ const MyChats = ({fetchAgain}) => {
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem('userInfo')));
     fetchChats();
-  }, [fetchAgain])
+    socket = socketInitializer;
+    socket.on("get-online-users", (onlineUsers) => {
+      setOnlineUsers(onlineUsers);
+    })
+  }, [fetchAgain, socketInitializer])
+
   return (
     <Box
       display={{base: selectedChat ? "none" : "flex", md: "flex"}}
@@ -92,6 +99,8 @@ const MyChats = ({fetchAgain}) => {
                     py={2}
                     borderRadius="lg"
                     key={chat._id}
+                    display="flex"
+                    justifyContent="space-between"
                   >
                     <Text>
                       {
@@ -100,6 +109,13 @@ const MyChats = ({fetchAgain}) => {
                       }
 
                     </Text>
+                    <span>
+                      {
+                        !chat.isGroupChat ?
+                        getUserState(loggedUser, chat.users, onlineUsers) : chat.chatName
+                      }
+
+                    </span>
                   </Box>
                 ))
               }

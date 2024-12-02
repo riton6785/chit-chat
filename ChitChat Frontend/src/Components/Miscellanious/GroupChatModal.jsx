@@ -32,7 +32,6 @@ const GroupChatModal = ({children}) => {
               const { data } = await axios.get(`http://localhost:5000/api/user?search=${search}`, config)
               setLoading(false);
               setSearchResult(data);
-              console.log(data);
         } catch (error) {
             toast({
                 title: "Error Occured",
@@ -57,7 +56,6 @@ const GroupChatModal = ({children}) => {
             return
         }
         try {
-            debugger
             const config = {
                 headers: {
                   Authorization: `Bearer ${user.token}`,
